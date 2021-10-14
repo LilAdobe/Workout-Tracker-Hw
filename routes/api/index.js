@@ -14,6 +14,7 @@ const Workout = require('../../models/workout')
 
 
 router.post('/api/workouts', (req, res) => {
+    console.log(req.body)
     Workout.create(req.body)
         .then(dbWorkout => {
             res.json(dbWorkout);
@@ -31,6 +32,7 @@ router.put('/api/workouts/:id', (req, res) => {
             res.json(dbWorkout);
         })
         .catch(err => {
+            console.log(err)
             res.status(400).json(err);
         })
 });
@@ -41,9 +43,9 @@ router.get('/api/workouts', (req, res) => {
         {
             $addFields: {
                 totalDuration:
-                    { $sum: 'exercises.duration' },
+                    { $sum: '$exercises.duration' },
                 totalDistance:
-                    { $sum: 'exercises.distance' }
+                    { $sum: '$exercises.distance' }
             }
         }
     ]).then(dbWorkout => {
@@ -59,14 +61,15 @@ router.get('/api/workouts/range', (req,res) => {
         {
             $addFields: {
                 totalDuration:
-                    { $sum: 'exercises.duration' },
+                    { $sum: '$exercises.duration' },
                 totalDistance:
-                    { $sum: 'exercises.distance' }
+                    { $sum: '$exercises.distance' }
             },
         }
     ])
     .then(dbWorkout => {
         const workoutdb = dbWorkout.slice(-7);
+        console.log(workoutdb)
         res.json(workoutdb);
     })
     .catch(err => {
